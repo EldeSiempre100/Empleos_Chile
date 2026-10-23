@@ -1,0 +1,43 @@
+Referencias externas consultadas para el análisis de experiencia de portales — 2026-10-23
+
+LABORUM CHILE
+- Inicio: https://www.laborum.cl/
+  Página consultada mostró regiones, áreas de empleo, seniority y mensaje de CV PDF/Jobi con sugerencias; no inferir alertas que no se vieron.
+- Preguntas frecuentes: https://www.laborum.cl/postulantes/preguntas-frecuentes
+  Cuenta y CV en “Mi CV”, postulación en avisos, seguimiento desde “Mis postulaciones”, notificación de apertura de CV, Jobi con recomendaciones y autopostulación descrita. “Empresa verificada” valida documentos, no garantiza al empleador.
+- App Store Chile: https://apps.apple.com/cl/app/laborum-b%C3%BAsqueda-de-empleo/id1296298888
+  Filtros por área, lugar y fecha según descripción oficial de la aplicación.
+
+CHILETRABAJOS
+- Inicio: https://www.chiletrabajos.cl/
+  Página consultada muestra exploración por categorías y regiones con recuentos, además de ofertas destacadas.
+- Oferta consultada: https://www.chiletrabajos.cl/trabajo/3888698
+  Página de oferta incluye acciones “Postular”, “Guardar” y “Compartir”; el flujo de postulación no fue confirmado.
+- Registro: https://www.chiletrabajos.cl/chtregister
+- Ingreso: https://www.chiletrabajos.cl/chtlogin
+  Extracción limitada a encabezados; no se confirmó alertas, CV o seguimiento.
+
+COMPUTRABAJO CHILE
+- Listado: https://cl.computrabajo.com/trabajo-de-calidad
+  Filtros observados: fecha, lugar/modalidad, región, experiencia, sueldo, jornada, contrato; ordenar relevancia/fecha/salario; alta de alerta; ofertas con renta mensual publicada.
+- Guía: https://cl.computrabajo.com/desarrollo-profesional/busqueda-empleo/portal-de-empleo-que-es
+  Perfil/CV y visibilidad del CV para reclutadores; evaluaciones de empleadores.
+- Estados de postulación: https://cl.computrabajo.com/desarrollo-profesional/computrabajo-te-ayuda/conocer-estado-postulacion
+  Estados documentados incluyen Postulado, CV visto, En proceso, Finalista y Proceso finalizado.
+- CV: https://cl.computrabajo.com/desarrollo-profesional/busqueda-empleo/como-actualizar-mi-cv
+- Evaluaciones de empresas: https://cl.computrabajo.com/tua_retail/evaluaciones
+  Nota global y dimensiones de opiniones de empleados.
+
+BOLSA NACIONAL DE EMPLEO (BNE)
+- FAQ: https://www.bne.cl/faq
+  Registro/perfil, descarga de CV PDF/Word, búsqueda y postulación autenticada; la candidatura queda registrada. Cursos se derivan a SENCE.
+- Ofertas: https://www.bne.cl/ofertas
+  Buscador/listado; página dinámica. Evidencia de filtros procedió de contenido indexado (incluye jornada); formulario completo no confirmado por extracción.
+- FAQ empresas: https://www.bne.cl/faq?tipoRegistro=1
+  Publicación de ofertas desde cuenta empresa.
+- Inclusión laboral: https://www.bne.cl/ley-de-inclusion-laboral
+  BNE describe publicación/intermediación de ofertas de inclusión laboral.
+- Documento oficial: https://www.bne.cl/static/pdf/manuales/faq.pdf
+  El texto indexado describe sistema informático público de intermediación laboral gratuita; PDF no se extrajo de forma legible.
+
+Notas: usar estos resultados como referencias de funciones, no como prueba de que existan APIs abiertas o permiso para extraer contenido. Confirmar las condiciones de acceso con cada fuente antes de conectar integraciones.

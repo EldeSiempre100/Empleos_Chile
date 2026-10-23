@@ -1,0 +1,870 @@
+                                                                                       EMPLEOS CHILE / ANEXO 02
+
+
+
+
+ EMPLEOS CHILE
+ Anexo técnico 02 · Catálogo de fuentes, campos disponibles
+ y diseño condicionado por datos
+
+ Destinatario: Manus (equipo de diseño y desarrollo fullstack)
+ Fecha de corte: 23 de octubre de 2026
+ Repositorio: https://github.com/EldeSiempre100/Empleos_Chile
+ Complementa: Empleos_Chile_Brief_Integral_Para_Manus.pdf
+ Restricción: solo Chile; empleo presencial por defecto; sin APIs ni servicios de extracción de pago;
+ conectores externos se implementarán en una fase posterior.
+
+
+
+     Orden de diseño para Manus. Este anexo describe las fuentes candidatas y el contrato de
+     datos que DEBE soportar el producto. No implica que todas las fuentes tengan una API pública,
+     que todas entreguen idénticos campos ni que ya exista una sincronización. Construye ahora la
+     interfaz, base de datos, importador CSV/JSON, API interna, normalización y filtros
+     funcionales; deja los adaptadores externos desconectados. Diseña los componentes para
+     campos nulos, opcionales y heterogéneos. No simules sincronizaciones ni inventes ofertas,
+     sueldos o fechas.
+
+
+
+
+ 01 · Semáforo de acceso y certeza
+
+  Etiqueta                                            Significado para construcción
+
+
+  API pública gratuita documentada                    Existe endpoint de lectura de avisos públicos sin pago;
+                                                      puede requerir conocer identificador de empresa/bolsa. No
+                                                      implica cobertura universal de Chile.
+
+
+  Web pública + extractor OSS                         Las ofertas se pueden consultar públicamente y existe
+                                                      código de extracción reutilizable. No es una API garantizada;
+                                                      cobertura y campos se deben verificar en implementación.
+
+
+  Web pública / manual                                Se verificó información publicada, pero no una API gratuita
+                                                      de lectura general ni extractor estable. Diseñar importación
+                                                      y adaptador pendiente.
+
+
+  API pública de datos complementarios                Proporciona catálogos, información sectorial o señales de
+                                                      mercado; no equivale a una vacante activa.
+
+
+  Exploratorio / condicionado                         Existe mecanismo técnico potencial, pero autenticación,
+                                                      permisos, cambios próximos o límites requieren validación
+                                                      previa. No comprometer como fuente activa.
+
+
+
+ Prioridad: primero los seis portales laborales de Chile y las APIs corporativas que ofrezcan empleos
+ chilenos presenciales. Las fuentes estadísticas y de licitaciones deben alimentar una eventual vista
+ analítica separada, nunca mezclarse con las vacantes postulables.
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                     PÁGINA 1 DE 12
+                                                                                  EMPLEOS CHILE / ANEXO 02
+
+
+
+ 02 · Inventario exhaustivo de portales laborales chilenos
+
+ Los nombres de campos siguientes son campos observables o plausibles a extraer según la
+ evidencia indicada; su presencia en cada aviso no es universal. En la ingesta se guarda el valor fuente
+ ( raw ), su procedencia y un campo normalizado opcional.
+
+
+ F01 — Bolsa Nacional de Empleo, BNE
+   • Referencia: https://www.bne.cl/ofertas y detalle https://www.bne.cl/oferta/{id} .
+   • Acceso: web pública; existe API para empresas que registran ofertas, con credenciales en perfil
+     empresa. No se verificó API pública de consulta masiva de vacantes. No tratar Origen de la oferta:
+     API como permiso para leer una API.
+
+   • Campos visibles en fichas verificadas: id de oferta , título , cantidad de vacantes , ocupación/
+     categoría , empresa o confidencial , actividad económica , descripción del empleador , descripción y
+     funciones , región , comuna , fecha de publicación , fecha de cierre/fin de vigencia , remuneración
+     (valor o Reservado) , jornada , educación requerida (si informada) , experiencia en años , tipo de
+     contrato (si informado) , nivel del cargo (si informado) , origen de la oferta , práctica profesional
+     sí/no , perfil funcional (si se muestra) , URL de postulación/ficha .
+
+   • Interfaz: filtros de ocupación, región/comuna, experiencia, publicación reciente, jornada, fuente,
+     número de vacantes, prácticas y fecha límite. Mostrar Reservado como sueldo no informado, nunca
+     como $0.
+   • Evidencia: https://www.bne.cl/oferta/2026-126969 · https://www.bne.cl/oferta/2026-115717 · https://
+     ms.bne.cl/faq?f%5B0%5D=categoria%3A18
+
+
+ F02 — Trabajando.cl (incluidos subportales corporativos)
+   • Referencia: https://www.trabajando.cl/
+   • Acceso: portal público; extractor abierto con Playwright monitor-empleos-cl. Este código localiza
+     principalmente la primera oferta de una búsqueda preconfigurada: no garantiza extracción de
+     todo el catálogo.
+   • Campos efectivamente implementados en ese extractor: título , empresa , ubicación textual ,
+     etiqueta de fecha , extracto de descripción , URL directa (cuando puede resolverse). Otros datos
+     visibles en detalle quedan por validar por plantilla concreta.
+   • Interfaz: fichas y tarjetas con cargo, empresa, localidad, fecha, descripción y procedencia; admitir
+     extensión hacia área, contrato, renta y jornada cuando la oferta original los publique.
+   • Repositorio/código: https://github.com/Bpuglicivich1999/monitor-empleos-cl/blob/main/
+     fuente_trabajando.js
+
+
+ F03 — ChileTrabajos
+   • Referencia: https://www.chiletrabajos.cl/encuentra-un-empleo
+   • Acceso: web pública; repositorios https://github.com/jreyesg18/scraper_chiletrabajos y https://
+     github.com/Danpier-Dos-Reis/ChileTrabajos .
+   • Campos mínimos confirmados por código estudiado: título , URL del aviso , palabra clave
+     coincidente (dato calculado por el scraper, no por el portal). Otros campos como empresa , lugar ,
+     publicación , renta , descripción o vencimiento requieren extractor de ficha validado antes de
+     declararlos disponibles en forma automática.
+   • Interfaz: búsqueda textual y ficha enriquecida cuando haya detalle; el diseño no debe depender de
+     que el scraper inicial entregue más que título y URL.
+   • Código: https://github.com/jreyesg18/scraper_chiletrabajos/blob/main/main.py
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                              PÁGINA 2 DE 12
+                                                                                    EMPLEOS CHILE / ANEXO 02
+
+
+
+ F04 — Laborum Chile
+   • Referencia: https://www.laborum.cl/empleos.html
+   • Acceso: web pública, sin API oficial de lectura gratuita confirmada; código abierto https://
+     github.com/andresmascl/Laborum-Scraper . Excluir scrapers comerciales de Apify y sus APIs
+     pagadas.
+   • Campos extraídos por el repositorio revisado: URL , cargo , empresa , detalle/descripción ;
+     además usa palabras clave para análisis de demanda. La obtención sistemática de comuna ,
+     modalidad , sueldo , jornada , tipo de contrato y beneficios debe verificarse con nuevas muestras y
+     condiciones de uso.
+   • Interfaz: soportar filtros de área/subárea, modalidad y nivel, pero activarlos con facetas reales
+     cuando exista información.
+   • Repositorio: https://github.com/andresmascl/Laborum-Scraper
+
+
+ F05 — Computrabajo Chile
+   • Referencia: https://cl.computrabajo.com/
+   • Acceso: web pública; extractor de referencia https://github.com/Arcan17/latam-recruitment-bot/blob/
+     main/scrapers.py , cuya integración debe restringirse al dominio chileno.
+   • Campos presentes en el scraper estudiado: id derivado de URL , título , empresa , ubicación
+     textual , salario textual si visible , URL , fecha publicada como texto , extracto de descripción ,
+     plataforma .
+
+   • No garantizados por el extractor: modalidad presencial estructurada, renta líquida/bruta,
+     seniority y requisitos completos; requieren lectura de ficha y revisión de disponibilidad.
+   • Interfaz: renta mostrada únicamente cuando el valor sea genuino; nunca convertir cadenas
+     ambiguas a remuneración mensual CLP sin validación.
+
+
+ F06 — Empleos Públicos / Servicio Civil
+   • Referencia: https://www.empleospublicos.cl/
+   • Acceso: web pública sin API gratuita de lectura general documentada; extractores reutilizables
+     https://github.com/renzoperagallo/webscraping_empleo_publico y https://github.com/
+     jeannorambuena/bot_empleos_publicos .
+   • Campos descritos expresamente en el extractor principal: título , organización , región ,
+     ciudad , renta bruta , fecha límite , enlace completo , cantidad de vacantes , área , tipo de vacante ,
+     ministerio , categoría .
+
+   • Detalle en fichas de convocatoria: funciones, requisitos específicos, nivel educacional,
+     experiencia, documentos exigidos, estamento, grado, tipo de nombramiento, condiciones, etapas y
+     modalidades de postulación, cuando consten.
+   • Interfaz: sección/faceta Sector público ; renta bruta claramente etiquetada; fecha límite visible y
+     ordenable; estamento/grado y documentos requeridos en ficha. Distinguir renta promedio, meses con
+     asignaciones, y renta habitual si el aviso presenta varias cifras.
+   • Evidencia: https://www.empleospublicos.cl/ · https://github.com/renzoperagallo/
+     webscraping_empleo_publico · https://www.empleospublicos.cl/pub/convocatorias/
+     convpostularavisoTrabajo.aspx?c=0&i=140091&j=0&tipo=convpostularavisoTrabajo
+
+
+ F07 — Get on Board (Chile)
+   • Referencia: https://www.getonbrd.cl/user-manual/api-de-get-on-board
+   • Acceso: API pública gratuita y documentada: https://api-doc.getonbrd.com/?version=latest .
+     Referencia de consumo: GET https://www.getonbrd.com/api/v0/categories y GET https://
+     www.getonbrd.com/api/v0/categories/{categoria}/jobs?page=N (validar rutas exactas y respuesta al
+     implementar).
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                 PÁGINA 3 DE 12
+                                                                                               EMPLEOS CHILE / ANEXO 02
+
+
+
+   • Recursos documentados: categorías, compañías, etiquetas/tags, empleos publicados y búsqueda
+     de texto libre; la API privada para postulaciones/datos de empleadores no se utilizará.
+   • Datos que debe absorber el adaptador, sujetos al JSON real: identificador, título, categoría,
+     etiquetas/habilidades, compañía, descripción, modalidad, ubicación, fecha, sueldo y URL solo
+     cuando la respuesta pública realmente los incluya.
+   • Restricción: descartar todo remoto internacional o sin sede física en Chile; es una fuente
+     complementaria, no central, por su enfoque tecnológico y remoto.
+   • Evidencia: https://www.getonbrd.cl/user-manual/api-de-get-on-board · https://github.com/getonbrd/
+     getonbrd-ruby
+
+
+
+ 03 · APIs públicas de páginas corporativas (ATS)
+
+ Son una familia de fuentes, no un agregador de todas las empresas. El conector necesitará un registro
+ local de empresa → proveedor ATS → identificador de board/sitio . Solo ingresar avisos con país = CL y
+ sede física chilena verificable.
+
+  ID / API                      Ejemplo de endpoint            Datos documentados              Condición
+                                público de lectura             aprovechables
+
+
+  A01 Greenhouse                GET https://boards-            id , title , absolute_url ,     GET sin autenticación;
+                                api.greenhouse.io/v1/boards/   location.name ,                 modalidad/sueldo no son
+                                {board_token}/jobs?            departments[] , offices[] ,     campos universales; banda
+                                content=true                   first_published ,               salarial puede requerir
+                                                               updated_at , content y          detalle
+                                                               metadatos configurados por
+                                                               empresa
+
+
+  A02 Lever                     GET https://api.lever.co/v0/   id , text , country ,           GET público de publicados;
+                                postings/{site}?mode=json      categories.location/team/       modalidad estructurada
+                                                               department/commitment ,         cuando existe
+                                                               allLocations ,
+                                                               workplaceType ,
+                                                                descriptionPlain , lists
+                                                               (requisitos/beneficios),
+                                                                hostedUrl , applyUrl ,
+                                                                salaryRange opcional y fecha
+
+
+  A03 Ashby                     GET https://api.ashbyhq.com/   title , location ,              GET público; excluir
+                                posting-api/job-board/         secondaryLocations ,            isListed=false
+                                {board}?                       department , team ,
+                                includeCompensation=true       workplaceType , isRemote ,
+                                                               employmentType ,
+                                                               descriptionPlain ,
+                                                               publishedAt , jobUrl ,
+                                                               applyUrl , compensation
+                                                               opcional, isListed
+
+
+  A04 SmartRecruiters           GET https://                    id , cargo, localización,      Posting API pública; campos
+                                api.smartrecruiters.com/v1/    departamento, función,          varían entre lista y detalle
+                                companies/{company}/           experiencia, contrato, fecha
+                                postings?                      de publicación y vínculo a
+                                country=cl&locationType=ONSI   ficha detallada; ubicación y
+                                TE                             modalidad filtrables
+
+
+  A05 Workable                  GET https://                   title , code , country ,        API de empleos públicos
+                                www.workable.com/api/          state , city , department ,     documentada; filtrar on_site
+                                accounts/{subdomain}?          telecommuting ,                 y country=Chile
+                                details=true                   workplace_type ,
+                                                               published_on , description ,
+                                                               employment_type , industry ,
+                                                               function , experience ,
+                                                               education , url
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                               PÁGINA 4 DE 12
+                                                                                               EMPLEOS CHILE / ANEXO 02
+
+
+
+  ID / API                      Ejemplo de endpoint            Datos documentados             Condición
+                                público de lectura             aprovechables
+
+
+  A06 Recruitee                 GET https://                   Vacantes publicadas, cargo,    Condicionado:
+                                {empresa}.recruitee.com/api/   ubicación, departamento,       documentación anuncia
+                                offers/                        descripción, requisitos,       token obligatorio desde
+                                                               fechas y enlaces según         10-02-2027; preparar
+                                                               payload                        adaptador, no depender de
+                                                                                              acceso anónimo futuro
+
+
+  A07 ATS adicionales           Dependen del tenant y          Cargo, localidad,              Exploratorio: inventariar
+  (Workday, etc.)               configuración                  departamento, fecha, detalle   páginas de empresas
+                                                               y URL, cuando la página        chilenas antes de incluir; no
+                                                               corporativa los exponga        afirmar API abierta universal
+
+
+
+ Documentación primaria: Greenhouse https://docs.greenhouse.io/job-board · Lever https://
+ github.com/lever/postings-api · Ashby https://developers.ashbyhq.com/docs/public-job-posting-api ·
+ SmartRecruiters https://developers.smartrecruiters.com/docs/endpoints · Workable https://
+ workable.readme.io/reference/jobs-1 · Recruitee https://docs.recruitee.com/reference/authentication-1 .
+
+ Regla salarial ATS: Lever y Ashby admiten campos estructurados opcionales; Greenhouse puede
+ publicar salario en texto o por consulta de detalle; ninguna API garantiza remuneraciones para todas las
+ ofertas ni CLP. Mantener moneda, periodicidad y condición bruto/líquido por separado.
+
+
+
+ 04 · Datos complementarios para filtros y análisis (no
+ ofertas)
+
+  ID / fuente                             Acceso y contenido                        Uso legítimo en Empleos_Chile
+
+
+  D01 — División Político                 Documentación histórica: https://         Selectores encadenados Región →
+  Administrativa (DPA)                    apis.digital.gob.cl/dpa/ ; regiones,      Comuna, autocompletar, sinónimos,
+                                          provincias, comunas, códigos y            normalización de localidad; ningún
+                                          relaciones padre-hijo. Endpoints          sueldo/empleo.
+                                          documentados de modernización no
+                                          respondieron en la verificación web;
+                                          usar catálogo JSON local validado
+                                          como respaldo, p. ej. https://
+                                          github.com/juanbrujo/chile-
+                                          georegionalizacion .
+
+
+  D02 — SENCE / SABE                      https://sence.gob.cl/sence/sabe ; datos   Catálogo ocupacional, sinónimos,
+                                          agregados mensuales de demanda por        taxonomía de habilidades, panel
+                                          ocupación, región, requisitos,            contextual de demanda si se decide
+                                          habilidades, nivel educativo, jornada y   incorporar. Nunca usar como
+                                          en algunos análisis salarios. Tableros,   vacante postulable.
+                                          informes y clasificador CIUO-08.CL; sin
+                                          feed público confirmado de avisos
+                                          individuales.
+
+
+  D03 — Datos Abiertos Chile (CKAN)       https://datos.gob.cl/api/3/action/        Incorporación futura de tablas
+                                          package_search ; catálogo de conjuntos    sectoriales/ocupacionales y descarga
+                                          de datos y, en recursos habilitados,      de conjuntos relevantes; no prometer
+                                          datastore_search para registros. No se    ofertas activas.
+                                          verificó un dataset gubernamental de
+                                          vacantes nacionales vigentes y
+                                          completas.
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                             PÁGINA 5 DE 12
+                                                                                                  EMPLEOS CHILE / ANEXO 02
+
+
+
+  ID / fuente                             Acceso y contenido                          Uso legítimo en Empleos_Chile
+
+
+  D04 — ChileCompra / Mercado             https://www.chilecompra.cl/api/ ; API       Solo módulo separado de señales de
+  Público                                 pública gratuita, requiere ticket           posible demanda futura por
+                                          personal; licitaciones, órdenes de          adjudicaciones/contratos. Una licitación
+                                          compra, comprador, proveedor, código,       no equivale a una vacante, y muchos
+                                          estado, fechas, territorio y montos;        proyectos MOP no están en Mercado
+                                          límite publicado 10.000 solicitudes/día     Público. No mezclar en resultados de
+                                          por ticket.                                 empleo.
+
+
+  D05 — OMIL / municipios / servicios     Sitios públicos descentralizados. No se     Catálogo prospectivo de fuentes
+  públicos regionales                     verificó API única nacional ni estándar     territoriales; fichas manuales o
+                                          común. bot_empleos_publicos                 adaptadores individualizados cuando se
+                                          documenta fuentes municipales               validen.
+                                          mayoritariamente en revisión/dry-run.
+
+
+  D06 — Información sobre inversión       Noticias, llamados públicos, planes,        Investigación contextual futura; NO
+  y políticas de empleo                   proyectos y licitaciones verificables; no   crear filtros de vacantes «Chile
+                                          un feed de contrataciones personales.       Despega»/«ENADI» sin datos
+                                                                                      directamente vinculados a una oferta.
+
+
+
+ SABE puede servir para enriquecer el diccionario ocupacional; su información está agregada y
+ actualizada mensualmente. ChileCompra, aunque tiene API gratuita, no entrega puestos de trabajo.
+ Documentación: https://sence.gob.cl/sence/noticias/sabe-se-consolida-como-herramienta-fundamental-
+ para-monitorear-ofertas-laborales · https://www.chilecompra.cl/api/ .
+
+
+
+ 05 · Matriz de disponibilidad de campos
+
+ Leyenda: D = documentado explícitamente en API o extractor estudiado; V = visible en algunas fichas
+ públicas; C = condicional según aviso, portal o detalle; — = no demostrado con la evidencia recopilada.
+ La matriz orienta el diseño: NO es garantía de que todas las ofertas de la columna tengan ese campo.
+
+  Fuente         Título /   Empresa       Región /      Fecha /        Sueldo         Modalidad    Jornada /     Requisitos /
+                 URL                      comuna        plazo                                      contrato      skills
+
+
+  BNE            V          V             V             V              V (a           C            V/C           V/C
+                                                                       menudo
+                                                                       reservado)
+
+
+  Trabajando:    D          D             D (texto)     D (etiqueta)   —              —            —             C (extracto)
+  extractor
+  revisado
+
+
+  ChileTrabaj    D          —             —             —              —              —            —             —
+  os: scraper
+  revisado
+
+
+  Laborum:       D          D             C             C              C              C            C             D (detalle)
+  scraper
+  revisado
+
+
+  Computrab      D          D             D (texto)     D (texto)      C (texto)      —            —             C (extracto)
+  ajo: scraper
+  revisado
+
+
+  Empleos        D          D             D             D (cierre)     D (bruta, si   C            C             C (detalle)
+  Públicos:                 (organismo)                                consta)
+  scraper
+
+
+  Get on         D          D (recurso    C             C              C              C            C             D
+  Board: API                compañía)                                                                            (categorías/
+  pública                                                                                                        tags)
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                                PÁGINA 6 DE 12
+                                                                                                  EMPLEOS CHILE / ANEXO 02
+
+
+
+  Fuente        Título /    Empresa      Región /      Fecha /         Sueldo        Modalidad     Jornada /    Requisitos /
+                URL                      comuna        plazo                                       contrato     skills
+
+
+  Greenhouse    D           C (board)    D (texto)     D               C             C             C            D
+  : API                                                                                                         (descripción)
+
+
+  Lever: API    D           C (board)    D             D               C             D             D            D
+                                                       (creación)      estructurad                              (descripción/
+                                                                       o                                        listas)
+
+
+  Ashby: API    D           C (board)    D             D               C             D             D            D
+                                                                       estructurad                              (descripción)
+                                                                       o
+
+
+  SmartRecru    D           D            D             D               C             D (filtro)    D/C          C (detalle)
+  iters: API
+
+
+  Workable:     D           D (cuenta)   D             D               C/no          D             D            D (estudios/
+  API                                                                  estándar                                 experiencia/
+                                                                                                                descripción)
+
+
+  Recruitee:    D           C (board)    D/C           C               C             C             C            D
+  API                                                                                                           (requisitos)
+  condicionad
+  a
+
+
+
+ Interpretación: incluso si se puede dibujar el componente «Salario», no se lo debe completar mediante
+ una estimación inventada. En la ficha laboral el valor ausente es un estado de datos válido y debe
+ representarse correctamente.
+
+
+
+ 06 · Diccionario canónico de datos ( Job )
+
+ El modelo de datos original del brief maestro se mantiene; incorporar este detalle de disponibilidad y
+ procedencia. Definir atributos opcionales y guardar versiones originales de importación. No exigir como
+ no nulo un campo que únicamente existe en algunas fuentes.
+
+  Familia                                Campos de modelo propuestos                 Procedencia / reglas
+
+
+  Identidad y fuente                     id , externalId , sourceCode ,              Identificadores persistentes; deduplicar
+                                         sourceUrl , canonicalUrl ,                  una vacante republicada en distintos
+                                         allSourceUrls[] , companyBoardId ,          portales sin perder enlaces originales.
+                                         rawRecordHash , sourceObservedAt
+
+
+  Cargo y organización                   title , normalizedTitle , companyName ,     Título original y normalizado separados;
+                                         companyConfidential , companySector ,       CIUO derivado debe identificarse como
+                                         department , team , jobCategory ,           clasificación propia.
+                                         occupationCodeCiuo
+
+
+  Territorio                             countryCode , regionCode , regionName ,     countryCode=CL exigido; nombre de
+                                         communeCode , communeName , cityRaw ,       ciudad no debe confundirse
+                                         locationRaw , officeLocation ,              automáticamente con comuna.
+                                         geoConfidence
+
+
+  Modalidad y condiciones                workplaceType ( onsite , hybrid ,           No convertir unknown en onsite .
+                                         remote , unknown ), workplaceEvidence ,      onsite solo con confirmación
+                                         employmentType , contractType ,             territorial/modalidad.
+                                         scheduleType , shift , hoursPerWeek ,
+                                         vacancyCount , practiceType
+
+
+  Compensación                           salaryRaw , salaryMin , salaryMax ,         Manejar CLP/UF/USD, mensual/anual/
+                                         salaryCurrency , salaryPeriod ,             hora, componentes de asignaciones y
+                                         salaryBasis ( gross , net , unknown ),      sueldo reservado. No aplicar conversión
+                                         salaryVisibility , salaryComponents[] ,     automática de bruto a líquido.
+                                         salaryEvidence
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                               PÁGINA 7 DE 12
+                                                                                             EMPLEOS CHILE / ANEXO 02
+
+
+
+  Familia                            Campos de modelo propuestos                 Procedencia / reglas
+
+
+  Perfil requerido                   educationLevel , degreeNames[] ,            Extraer solo si existen; distinguir
+                                     experienceMinYears , experienceRaw ,        competencias expresas de las inferidas.
+                                     skillsExplicit[] , licenses[] ,
+                                     languages[] , responsibilities[] ,
+                                     requirements[] , benefits[]
+
+
+  Contenido y postulación            descriptionPlain ,                          Preservar URL original y enlace de
+                                     descriptionHtmlSanitized ,                  postulación, sin automatizar
+                                     applicationUrl , applicationMethod ,        postulación.
+                                     requiredDocuments[] ,
+                                     recruitmentStages[]
+
+
+  Ciclo de vida                      publishedAt , expiresAt , firstSeenAt ,      firstSeenAt es fecha de captura local,
+                                     lastSeenAt , lastVerifiedAt ,               no fecha de publicación. No llamar
+                                     recordUpdatedAt , sourceStatus ,            vigente solo porque existe en una
+                                     verificationStatus ,                        importación.
+                                     availabilityConfidence
+
+
+  Derivados por Empleos_Chile        inferredSector , inferredSeniority ,        Calculados por nuestra plataforma,
+                                     normalizedSkills[] , matchScore ,           nunca presentarlos como declaraciones
+                                     matchReasons[] , dataCompleteness ,         del empleador.
+                                     searchIndex
+
+
+
+ Cada dato sensible a interpretación debe poder conservar valor , texto original , fuente , fecha
+ de observación y estado de certeza . Ejemplos: salario, modalidad, cierre, experiencia y comuna.
+
+
+
+ 07 · Filtros, desplegables y estado de interfaz: qué fuente
+ los alimenta
+
+  Control UI                         Opciones y comportamiento                   Origen del dato y tratamiento
+
+
+  Buscar cargo / empresa / palabra   Campo libre con sugerencias y               title , companyName , descriptionPlain ,
+  clave                              sinónimos; buscar en título,                skillsExplicit[] ; sinónimos derivados
+                                     organización, responsabilidades y skills;   de catálogo CIUO y reglas locales.
+                                     resaltado de coincidencias.
+
+
+  Región                             Multiselect 16 regiones, buscador           DPA/catálogo local; oferta normalizada.
+                                     interno, «Seleccionar todas», contador;
+                                     AND con otros filtros.
+
+
+  Comuna                             Multiselect dependiente de región;          Catálogo local + geo normalizada;
+                                      buscar comuna , chips y opción «Todas      admitir «Sin comuna identificada»
+                                     las comunas seleccionadas».                 como opción explícita, no inventarla.
+
+
+  Modalidad                          Selector Presencial (activado por           workplaceType ; si falta, unknown y no
+                                     defecto), Híbrido (opt-in), Remoto          mezclarlo en resultados presenciales
+                                     (desactivado), No informada (opt-in         estrictos.
+                                     diagnóstico).
+
+
+  Fecha de publicación               24h, 3d, 7d, 15d, 30d, rango                 publishedAt si existe; firstSeenAt no
+                                     personalizado; ordenar recientes            la reemplaza sin rotular.
+                                     primero.
+
+
+  Sueldo                             Mínimo/máximo CLP, Con sueldo               salaryMin/Max/Currency/Period/Basis ;
+                                     informado , Sin sueldo informado ;          sueldo Reservado →
+                                     mostrar base bruta/líquida cuando           salaryVisibility=reserved sin valor
+                                     exista; no mezclar periodicidades.          numérico.
+
+
+  Área / profesión                   Árbol de categorías, subáreas,              Categoría original por fuente +
+                                     selección múltiple con casillas.            taxonomía propia/CIUO.
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                            PÁGINA 8 DE 12
+                                                                                                EMPLEOS CHILE / ANEXO 02
+
+
+
+  Control UI                          Opciones y comportamiento                     Origen del dato y tratamiento
+
+
+  Sector económico                    Servicios, comercio, salud no médica,         CIIU/sector explícito o clasificación
+                                      banca/finanzas, industria, minería,           marcada como inferida.
+                                      logística, construcción, tecnología,
+                                      educación, público, otros.
+
+
+  Nivel / experiencia                 Sin experiencia, 0–1, 2–3, 4–5, 6+ años;      Experiencia explícita y seniority
+                                      junior/intermedio/senior/jefatura.            opcional; no deducir seniority
+                                                                                    únicamente de nombre cargo sin
+                                                                                    marcar derivación.
+
+
+  Educación                           Media, técnica, IP, universitaria,            Nivel solicitado en aviso; CIUO es
+                                      postgrado, no especificada; multiselect.      catálogo de ocupación, no prueba de
+                                                                                    requisito educativo.
+
+
+  Jornada / contrato                  Completa, parcial, turnos, honorarios /       employmentType , scheduleType ,
+                                      plazo fijo / indefinido / contrata / planta   contractType ; separar jornada de tipo
+                                      y «No informado».                             de contrato.
+
+
+  Empresa                             Autocompletar + casillas múltiples y          Empleador real; unificar razones
+                                      «Confidencial».                               sociales con normalización reversible.
+
+
+  Portal de origen                    BNE, Trabajando, ChileTrabajos,                sourceCode ; conservar todas las
+                                      Laborum, Computrabajo, Empleos                fuentes de una vacante deduplicada.
+                                      Públicos, Get on Board, Corporativo,
+                                      Manual.
+
+
+  Estado de la oferta                 Verificada, pendiente por verificar,          Verificaciones propias y fechas de
+                                      vencida (opt-in/archivo); fecha de            vencimiento; no afirmar contratación
+                                      última comprobación.                          activa solo por fecha reciente.
+
+
+  Vacantes / práctica                 Cantidad de puestos (si existe),              Campos BNE y Empleos Públicos
+                                      «Práctica profesional sí/no», sector          particularmente útiles; en otros
+                                      público/privado.                              orígenes, opcionales.
+
+
+  Orden                               Más recientes, fecha límite próxima,          Salarios solo con base/periodo
+                                      mayor remuneración comparable,                compatibles; puntuaciones explicables.
+                                      título, relevancia al texto,
+                                      compatibilidad con CV.
+
+
+
+ Semántica obligatoria: OR entre varias casillas de la misma faceta; AND entre facetas diferentes.
+ Mantener contador real, chips removibles, Restablecer filtros , URL de búsqueda compartible sin datos
+ privados, preservación de filtros al volver de una ficha y controles accesibles al teclado.
+
+
+
+ 08 · Tarjetas y fichas de vacantes: representación de campos
+ opcionales
+
+ Tarjeta compacta (prioridad): título , empresa o Confidencial , comuna/región cuando esté
+ identificada , etiqueta presencial , sueldo divulgado o «Sueldo no informado» , fecha publicada o
+ «Detectada el …» , fuente(s) , guardar , abrir ficha . No inventar logotipos ni cifras.
+
+ Ficha completa: título, empresa, país/región/comuna, modalidad con evidencia, tipo de puesto,
+ jornada, contrato, salario fuente (con moneda, período, bruto/líquido), número de vacantes, fechas,
+ responsabilidades, requisitos, experiencia, estudios, habilidades, beneficios, condiciones, contacto
+ institucional público si consta, Ver aviso original , Postular en sitio de origen , notas privadas, historial
+ de fuentes, última verificación.
+
+ Diseño condicional: si falta salary , mostrar texto corto y no un bloque grande vacío. Si falta
+ modalidad, No especificada y excluir del filtro Presencial estricto. Si el plazo expiró, evitar inducir a
+ postular sin comprobar vigencia. Si coinciden varias URLs, mostrar una oferta consolidada con Publicado
+ también en… .
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                                PÁGINA 9 DE 12
+                                                                                                   EMPLEOS CHILE / ANEXO 02
+
+
+
+ Pestaña «Mi CV / Personas»: no recibe datos de APIs de empleo. Proviene de archivos cargados y
+ preferencias consentidas. Competencias y experiencia derivadas se almacenan como perfil editable, y
+ el motor cruza requisitos de cada oferta. Puntaje, brechas y sugerencias son cálculos internos, no
+ datos del portal de origen. CV y datos personales nunca en GitHub Pages ni en repositorio público.
+
+
+
+ 09 · Cómo diseñar el contrato de adaptadores sin conectarlos
+ hoy
+
+
+    // Especificación orientativa, no implementación obligatoria.
+    type SourceKind = 'public_api' | 'open_web' | 'import' | 'reference_data';
+    type EvidenceLevel = 'explicit' | 'parsed' | 'inferred' | 'unknown';
+
+
+    interface JobSourceRecord {
+        sourceCode: string;
+        sourceKind: SourceKind;
+        externalId?: string;
+        originalUrl: string;
+        capturedAt: string;                   // ISO UTC
+        rawFields: Record<string, unknown>;
+        normalized: Partial<CanonicalJob>; // todos los atributos no observados => null/ausentes
+        evidence: Record<string, { level: EvidenceLevel; raw?: string }>;
+    }
+
+
+    interface SourceAdapter {
+        id: string;
+        accessMode: 'public_api' | 'scraper_pending' | 'manual_only';
+        capabilities: string[];
+        // Preparar firma, no hacer llamadas externas en esta fase.
+        normalize(input: unknown): JobSourceRecord[];
+    }
+
+
+
+ Capacidades por fuente: el backend debe registrar canRead , hasStructuredSalary , hasPublishedAt ,
+ hasExpiryDate , hasWorkplaceType , hasFullDescription , supportsComuna , requiresCredential ,
+ sourceStatus , lastSuccessfulSync . supports significa que el conector sabe procesarlo, no que todas las
+ vacantes lo contengan. Hasta conectar, lastSuccessfulSync=null y sourceStatus='not_connected' , sin
+ contadores ni estados falsos.
+
+ Importación manual operativa ahora: CSV/JSON con mapeo de columnas a todos los campos
+ canónicos, vista previa, validación de país, control de calidad, importación transaccional, deduplicación,
+ persistencia y trazabilidad. Preparar archivos de ejemplos identificados como pruebas en entorno
+ de desarrollo, pero no exhibir ofertas ficticias como si fueran vigentes.
+
+
+
+ 10 · Priorización de integración posterior (no ejecutarla
+ ahora)
+
+  Prioridad                                     Fuentes                                 Motivo
+
+
+  P0 — interfaz y modelo ahora                  Catálogo de regiones/comunas local +    Útil desde el día uno; sin dependencia
+                                                importador CSV/JSON + normalización     externa.
+                                                + CV
+
+
+  P1 — APIs públicas gratuitas                  Greenhouse, Lever, Ashby,               Payloads estructurados y mantenibles;
+                                                SmartRecruiters, Workable, Get on       requiere catálogo de empresas/boards.
+                                                Board, para empresas con puestos
+                                                presenciales en Chile
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                                PÁGINA 10 DE 12
+                                                                                           EMPLEOS CHILE / ANEXO 02
+
+
+
+  Prioridad                           Fuentes                                   Motivo
+
+
+  P1 — portales chilenos              BNE, Empleos Públicos, Trabajando,        Cobertura general chilena; estudiar
+                                      ChileTrabajos, Laborum, Computrabajo      términos/robots, consentimiento y
+                                                                                robustez de extractores antes de
+                                                                                activarlos.
+
+
+  P2 — apoyo de datos                 DPA local/oficial, catálogo CIUO de       Mejoran filtros, clasificación y
+                                      SABE; datos.gob.cl si aparecen datasets   búsquedas, no aumentan vacantes
+                                      pertinentes                               directamente.
+
+
+  P3 — señales de inversión           Mercado Público, OMIL locales             Señales prospectivas/contextuales; no
+                                      verificadas, planes sectoriales           incorporarlas a resultados de puestos
+                                                                                postulables hasta tener anuncios.
+
+
+  Condicionado                        Recruitee, Workday, otras ATS/portales    Evaluar disponibilidad futura,
+                                      corporativos                              autenticación y términos caso a caso.
+
+
+
+
+ 11 · Pruebas de aceptación específicas de disponibilidad de
+ datos
+
+  1. Cargar vía importación tres ofertas: una con sueldo CLP bruto mensual, otra Reservado , una sin
+     campo salarial. Comprobar que el slider numérico no trate las dos últimas como $0.
+  2. Importar una oferta BNE con 5 vacantes, inicio/cierre, experiencia y práctica No ; mostrar esas
+     facetas solo donde proceda.
+  3. Importar convocatoria pública con renta bruta y plazo; la ficha debe distinguir bruta y fecha límite ,
+     no recalcular líquido.
+  4. Importar aviso Lever workplaceType=on-site y una descripción de Greenhouse sin modalidad; solo el
+     primero aparece bajo Presencial estricto.
+  5. Importar oferta Ashby isListed=false en un lote de prueba; no exponerla como listado visible.
+  6. Importar dos registros de una misma vacante con URLs BNE y Trabajando; mostrar un resultado con
+     dos fuentes, sin perder originales.
+  7. Aplicar Región Metropolitana + dos comunas + empleo presencial + fecha + empresa + área +
+     remuneración; demostrar AND entre facetas y OR dentro de la misma.
+  8. Cargar cargos ingeniero comercial , ejecutivo de cuentas , analista financiero y mostrar búsqueda
+     por palabras y competencias transferibles, claramente diferenciadas de habilidades exigidas.
+  9. Comprobar que el tablero SABE y una licitación Mercado Público nunca aparezcan como oferta
+     postulable.
+ 10. Administrador puede ver para cada fuente no conectada , tipos de campos previstos y lista de datos
+     faltantes; interfaz de búsqueda no muestra falsas métricas de sincronización.
+ 11. Sin ninguna conexión externa, todos los filtros, pantallas, perfiles, favoritos y fichas funcionan sobre
+     datos importados.
+ 12. La interfaz móvil usa drawer multiselección con conteos, mantiene filtros al abrir/cerrar ficha y es
+     totalmente navegable por teclado.
+
+
+
+ 12 · Fuentes documentales y repositorios de referencia
+
+ Oficiales / proveedores
+
+   • BNE FAQ API (orientada a empresas): https://ms.bne.cl/faq?f%5B0%5D=categoria%3A18
+   • BNE ficha pública con campos: https://www.bne.cl/oferta/2026-126969
+   • Get on Board API pública: https://www.getonbrd.cl/user-manual/api-de-get-on-board
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                        PÁGINA 11 DE 12
+                                                                                     EMPLEOS CHILE / ANEXO 02
+
+
+
+   • Greenhouse Job Board API: https://docs.greenhouse.io/job-board
+   • Lever Public Postings API: https://github.com/lever/postings-api
+   • Ashby Public Job Posting API: https://developers.ashbyhq.com/docs/public-job-posting-api
+   • SmartRecruiters Posting API: https://developers.smartrecruiters.com/docs/endpoints
+   • Workable public jobs API: https://workable.readme.io/reference/jobs-1
+   • Recruitee public offers / autenticación futura: https://docs.recruitee.com/reference/offers · https://
+     docs.recruitee.com/reference/authentication-1
+   • SENCE SABE: https://sence.gob.cl/sence/sabe
+   • SENCE SABE metodología y convenios: https://sence.gob.cl/sence/noticias/sabe-se-consolida-como-
+     herramienta-fundamental-para-monitorear-ofertas-laborales
+   • ChileCompra API gratis y ticket: https://www.chilecompra.cl/api/
+   • DPA documentación histórica: https://apis.digital.gob.cl/dpa/
+   • Datos abiertos API: https://datos.gob.cl/es/api/3/action/package_search
+
+ Código libre / reutilizable (verificar licencia y funcionamiento al integrar)
+
+   • ChileTrabajos: https://github.com/jreyesg18/scraper_chiletrabajos
+   • ChileTrabajos: https://github.com/Danpier-Dos-Reis/ChileTrabajos
+   • Trabajando + ChileTrabajos: https://github.com/Bpuglicivich1999/monitor-empleos-cl
+   • Laborum: https://github.com/andresmascl/Laborum-Scraper
+   • Computrabajo CL: https://github.com/Arcan17/latam-recruitment-bot
+   • Empleos Públicos: https://github.com/renzoperagallo/webscraping_empleo_publico
+   • Público y municipal: https://github.com/jeannorambuena/bot_empleos_publicos
+   • Catálogo DPA de respaldo: https://github.com/juanbrujo/chile-georegionalizacion
+   • Integración Get on Board API: https://github.com/getonbrd/getonbrd-ruby
+
+
+
+ Decisión final para Manus: implementar el modelo más completo posible y la UI
+ condicionalmente adaptable, no una interfaz que dependa de que todas las APIs devuelvan salario,
+ comuna, modalidad o fecha. La entrega del desarrollo mantiene el alcance original: fullstack
+ terminado, sin conectores externos activos. No agregar pantallas de políticas públicas, inversiones
+ o dashboards analíticos al alcance actual por el solo hecho de que estas fuentes aparezcan en el
+ catálogo.
+
+
+
+
+CATÁLOGO DE FUENTES · 23 OCT 2026                                                                 PÁGINA 12 DE 12
+

@@ -1,0 +1,20 @@
+{
+  "routes": [
+    { "path": "/", "title": "Acceso" },
+    { "path": "/login", "title": "Acceso privado" },
+    { "path": "/empleos", "title": "Explorar empleos" },
+    { "path": "/empleos/:id", "title": "Ficha de oferta" },
+    { "path": "/guardados", "title": "Ofertas guardadas" },
+    { "path": "/busquedas", "title": "Búsquedas guardadas" },
+    { "path": "/personas", "title": "Personas" },
+    { "path": "/personas/nuevo", "title": "Agregar perfil" },
+    { "path": "/personas/:id", "title": "Perfil de persona" },
+    {
+      "path": "/personas/:id/coincidencias",
+      "title": "Coincidencias de empleo"
+    },
+    { "path": "/administracion/ofertas", "title": "Administrar ofertas" },
+    { "path": "/administracion/fuentes", "title": "Fuentes" },
+    { "path": "/configuracion", "title": "Configuración" }
+  ]
+}

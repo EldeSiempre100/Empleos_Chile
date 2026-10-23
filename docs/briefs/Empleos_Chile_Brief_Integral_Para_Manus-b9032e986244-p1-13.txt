@@ -1,0 +1,774 @@
+BRIEF DE DESARROLLO / MANUS
+
+
+
+
+EMPLEOS
+CHILE
+Motor personal de búsqueda laboral
+y compatibilidad de perfiles
+
+
+
+PROYECTO
+
+Construcción fullstack profesional
+
+
+REPOSITORIO
+
+EldeSiempre100 / Empleos_Chile
+
+
+LÍMITE ACTUAL
+
+Integraciones externas reservadas para fase 2
+
+
+ENTREGA
+
+Aplicación lista, probada y documentada
+
+
+
+
+ESPECIFICACIÓN EJECUTABLE · 23 OCT 2026 · V1.0
+EMPLEOS CHILE                                                                          ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ Versión: 1.0 | Fecha: 23 de octubre de 2026
+ Repositorio de destino: https://github.com/EldeSiempre100/Empleos_Chile
+ Tipo de producto: motor privado de exploración y calce de oportunidades laborales en Chile
+ Estado exigido al entregar: producto fullstack terminado, utilizable y verificable; integraciones automáticas con
+ portales externos preparadas pero NO conectadas.
+
+
+
+
+ 01. INSTRUCCIÓN PRINCIPAL A MANUS
+
+    ENTREGABLE EXIGIDO
+    Fullstack operativo ahora; conexión de portales laborales después.
+
+
+ Actúa como equipo sénior de producto, diseño UI/UX, arquitectura, desarrollo fullstack, QA y DevOps. Tu
+ cometido es diseñar, construir, probar, documentar e integrar en el repositorio indicado una aplicación de
+ búsqueda y gestión de ofertas laborales en Chile, de calidad equivalente a un producto profesional publicado. No
+ entregues una maqueta, landing page, presentación de concepto, página estática sin lógica, proof of concept,
+ conjunto de pantallas desconectadas ni una aplicación que solo funcione con datos ficticios.
+
+ La plataforma es un motor personal de uso restringido. Debe permitir explorar vacantes, filtrar múltiples
+ dimensiones, revisar fichas detalladas, guardar oportunidades, cargar y gestionar los CV de diversas personas que
+ han autorizado su uso, y obtener búsquedas personalizadas y rankings explicables de compatibilidad. El propósito
+ inmediato no es crear un portal comercial ni permitir que terceros postulen dentro de nuestra página.
+
+ Construye todo el producto excepto las conexiones efectivas con APIs/scrapers externos de portales laborales.
+ Esas conexiones serán una segunda fase. Sin ellas, la versión que entregues debe ser plenamente operativa
+ mediante carga/importación manual de datos reales, persistencia, buscador, filtros, ficha de vacante, perfiles, CV,
+ favoritos, búsquedas guardadas y motor de calce. Implementa contratos de adaptadores para enchufar conectores
+ posteriormente sin rehacer el sistema.
+
+ No detener la ejecución en planificación: las decisiones de arquitectura razonables que falten deben resolverse
+ con criterio profesional, documentarse y aplicarse. No pidas validación para decisiones triviales ni entregues un
+ documento en lugar del software. No cambies el objetivo por dificultades puntuales: prueba alternativas gratuitas
+ y continua. No implementes un servicio pago ni dependas de suscripciones, cuotas de APIs comerciales o
+ credenciales de terceros para que funcione el núcleo.
+
+ No trasladar las instrucciones internas a la interfaz. El portal no debe mostrar frases como «creado con IA», «esto
+ es una demo», «prototipo», «para fines educativos», «sitio experimental», advertencias genéricas, mensajes de
+ autoprotección ni referencias a este encargo. Solo presentar mensajes reales y útiles para la persona usuaria, como
+ «No hay ofertas que coincidan con estos filtros», «Falta conectar una fuente» en el panel administrativo, o «Sueldo
+ no informado». No inventes anuncios vigentes, salarios, estadísticas ni empresas.
+
+
+
+ 02. VISIÓN, ALCANCE Y LÍMITES
+ Producto: Empleos Chile. Usuario principal: una persona que reúne ofertas de trabajo y ayuda a conocidos que
+ buscan empleo. Ámbito geográfico exclusivo: Chile, con cobertura de todas sus regiones y comunas. Modalidad
+ principal: presencial. Vacantes híbridas solo si el usuario las habilita explícitamente; excluir de los resultados
+ predeterminados teletrabajo y posiciones internacionales sin lugar de trabajo en Chile.
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                02
+EMPLEOS CHILE                                                                                 ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ El sistema debe estar preparado para incorporar múltiples perfiles de candidatos, no solamente un CV. La
+ aplicación debe permitir filtrar oportunidades sin CV y, alternativamente, generar recomendaciones para un perfil
+ concreto. No restringir arbitrariamente a salud, banca o tecnología: contemplar servicios, comercio, administración,
+ salud no médica, logística, construcción, minería, industria, sector público y todos los demás rubros.
+
+ Incluido obligatoriamente ahora: interfaz responsive, búsqueda, filtros, fichas de oferta, favoritos, búsquedas
+ guardadas, perfiles con CV PDF/DOCX, análisis y corrección de perfil, compatibilidad de ofertas, importación de
+ ofertas CSV/JSON, alta y edición manual, deduplicación, registro de fuente/fecha de verificación, administración
+ de fuentes, API interna, base de datos persistente, autenticación para datos privados, despliegue o ejecución
+ reproducible, pruebas y documentación.
+
+ Aplazado expresamente: conexión de APIs oficiales, scraping automático de
+ BNE/ChileTrabajos/Laborum/Trabajando/Computrabajo/Empleos Públicos, LinkedIn, envío real de postulaciones,
+ mensajería, monitorización de redes de contactos, modelos de IA de pago, predicción de salarios no observados y
+ publicación como servicio abierto. Deben quedar puntos de extensión limpios, NO funciones falsas.
+
+ Prioridad funcional: primero que el explorador de vacantes y su UX estén completos; segundo, CV/perfiles y
+ recomendaciones; tercero, administración e importación; cuarto, calidad y despliegue. Ninguna fase está completa
+ mientras otra esencial siga siendo una pantalla vacía.
+
+
+
+ 03. REFERENCIAS DE EXPERIENCIA DE USUARIO
+ Estudia visual y funcionalmente los siguientes sitios como referencias de PATRONES de uso, sin copiar identidad
+ gráfica, logotipos, textos protegidos ni un clon visual literal:
+
+
+   Sitio y enlace              Qué se debe aprender                                    Aplicación en Empleos Chile
+
+
+   Computrabajo Chile          Búsqueda centrada en cargo y ubicación; tarjetas,       Explorador intuitivo y resultados relevantes
+                               refinamiento y acciones sobre ofertas
+
+
+   Laborum Chile               Filtros por área, subárea, región, comuna, modalidad,   Facetas de búsqueda completas y combinables
+                               nivel laboral y recientes
+
+
+   Trabajando Chile            Navegación profesional y filtros detallados             Claridad en búsqueda avanzada y ficha
+
+
+   ChileTrabajos               Listados ágiles, publicaciones, búsqueda y enlaces      Densidad informativa sin saturación
+
+
+   Bolsa Nacional de Empleo    Criterios formales, tipos de oferta y origen de         Metadatos, fuente, condiciones y trazabilidad
+                               publicación
+
+
+   Empleos Públicos            Convocatorias públicas, plazos, requisitos y renta      Compatibilidad con empleo público
+                               bruta cuando consta
+
+
+ No implementar una página de inicio promocional como pantalla principal: tras autenticación, la vista por defecto
+ debe ser Explorar empleos. Inspiración visual: plataforma editorial/fintech profesional, moderna, sobria, atractiva y
+ extremadamente legible. La UI será propia, no un mosaico de componentes genéricos.
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                                03
+EMPLEOS CHILE                                                                                     ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ 04. MAPA DE NAVEGACIÓN Y PANTALLAS COMPLETAS
+
+   Ruta / pantalla               Contenido y comportamiento obligatorio
+
+
+   /login                        Entrada privada, sin registro público, recuperación o restablecimiento administrado de credenciales y
+                                 mensajes claros de error
+
+
+   /empleos                      Explorador, búsqueda global, filtros laterales y chips activos, resultado ordenable, contador, tarjetas,
+                                 estados de carga/vacío/error
+
+
+   /empleos/:id                  Ficha individual con información completa, acciones y enlace externo original; recuperar filtros y scroll
+                                 al volver
+
+
+   /guardados                    Ofertas favoritas; marcadores, notas, etiquetas, descartar/recuperar; filtros y orden propios
+
+
+   /busquedas                    Crear, nombrar, editar, ejecutar y eliminar búsquedas guardadas; mostrar recuento y fecha de última
+                                 ejecución
+
+
+   /personas                     Listado de perfiles/candidatos autorizados; búsqueda y administración de perfiles independientes
+
+
+   /personas/nuevo y             Importación de CV, extracción, formulario editable, competencias, experiencia, preferencias de empleo
+   /personas/:id                 y control de consentimiento
+
+
+   /personas/:id/coincidencias   Vacantes ordenadas por compatibilidad, justificación, carencias, filtros y comparación
+
+
+   /administracion/ofertas       Importar CSV/JSON, vista previa, mapeo de columnas, validación, deduplicación, editar/despublicar,
+                                 historial de importación
+
+
+   /administracion/fuentes       Registro de fuentes, adaptadores inactivos/pendientes, controles de calidad y fechas; nunca simular
+                                 sincronizaciones externas
+
+
+   /configuracion                Preferencias generales, regiones por defecto, modalidades, gestión de cuenta y política de
+                                 retención/borrado
+
+
+ Navegación global: barra superior con marca Empleos Chile, búsqueda, accesos a Explorar, Guardados, Búsquedas
+ y Personas, menú de administración en segundo nivel y cuenta. Mantener jerarquía compacta. Los datos de
+ perfiles nunca deben aparecer en páginas públicas o en payloads sin autorización.
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                                     04
+EMPLEOS CHILE                                                                                                 ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ 05. ESTRUCTURA DE INTERFAZ - ESCRITORIO Y MÓVIL
+  PATRÓN DE EXPLORACIÓN - REFERENCIA VISUAL DE COMPONENTES
+
+   EMPLEOS CHILE                                                      Explorar | Guardados | Personas               Empleos Chile
+
+
+
+     Buscar cargo, empresa, habilidad ...          Región / comuna                                                  Buscar...
+
+
+                                                                                                                     Filtros (3)
+     FILTROS                       Analista comercial
+                                   Santiago | Presencial                                                            Analista
+     Ubicación v
+                                                                                                                    Empresa | Comuna
+     Fecha v                       Coordinador de operaciones
+     Sueldo v                      Rancagua | Presencial
+                                                                                                                    Coordinador
+     Área v                                                                                                         Empresa | Comuna
+                                   Jefe de gestión
+     Experiencia v
+                                   Valparaíso | Presencial
+                                                                                                                    Supervisor
+                                                                                                                    Empresa | Comuna
+                                                ESCRITORIO                                                                      MÓVIL
+
+ Escritorio ≥1200 px: cabecera compacta y fija; franja de búsqueda libre/cargo + ubicación; panel izquierdo de
+ filtros (ancho ~270-310 px) con scroll independiente; zona de tarjetas de ofertas y, si el ancho lo permite, panel
+ derecho de detalle que cambia sin abandonar la búsqueda. Permitir abrir ficha completa. Ofrecer alternancia de
+ diseño lista compacta / tarjetas; seleccionar vacante destaca tarjeta y actualiza panel de detalle sin perder filtros.
+
+ Tableta 768-1199 px: cabecera reducida; filtros en drawer o columna colapsable; listado principal y detalle como
+ panel o página. Móvil ≤767 px: búsqueda en la parte superior; botón Filtros con número de filtros activos y drawer
+ de pantalla casi completa; chips desplazables; tarjetas de una columna; ficha de pantalla completa con regreso que
+ preserva scroll; botón persistente Ver oferta original en el detalle si mejora navegación.
+
+ Tarjetas: título del cargo (hasta 2 líneas visibles), empresa, comuna/región, modalidad, rango o estado de
+ remuneración, fecha publicada, portal de procedencia, breve extracto de funciones, nivel/jornada si disponibles,
+ indicador de guardado y acción Ver detalles. No llenar cards con campos vacíos. Mostrar No informado cuando el
+ dato sea importante y esté ausente; no reemplazarlo por supuestos.
+
+ Detalle: encabezado con título/empresa/ubicación/fecha/modalidad/sueldo; botones Guardar, Agregar nota,
+ Abrir oferta original; secciones Descripción, Funciones, Requisitos, Experiencia, Formación, Jornada, Contrato,
+ Remuneración, Beneficios, Lugar de trabajo y Origen/fecha de verificación; sección de ofertas similares dentro del
+ universo almacenado. En escritorio se debe poder comparar rápidamente una oferta con otra.
+
+
+
+ 06. BUSCADOR Y FILTROS - ESPECIFICACIÓN DE INTERACCIÓN
+ Cada filtro se implementa como desplegable real (popover/listbox, acordeón o combobox) con selección por
+ checkbox/radio y estado visible. Debe ser posible marcar y desmarcar criterios, seleccionar varias opciones
+ compatibles, limpiar una faceta y limpiar todo. Mostrar contador por faceta cuando aporte valor, chips removibles
+ sobre el listado y resultado que responda sin recargar toda la aplicación. Mantener filtros en URL y al regresar de
+ una ficha.
+
+
+   Filtro                             Control concreto                                                  Opciones / regla
+
+
+   Palabras clave                     input con limpiar, sugerencias y Enter                            Cargo, empresa, funciones, competencias;
+                                                                                                        búsqueda sin distinguir tildes/mayúsculas
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                                             05
+EMPLEOS CHILE                                                                        ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+   Filtro                    Control concreto                                 Opciones / regla
+
+
+   Ubicación                 multiselect Región → Comuna con búsqueda y       16 regiones y catálogo comunal de Chile;
+                             checkboxes                                       selección múltiple; comunas coherentes con
+                                                                              región; Todo Chile
+
+
+   Modalidad                 checkbox o segmented con selección explícita     Presencial activo por defecto; Híbrida opt-in;
+                                                                              Remota desmarcada y fuera de los resultados
+                                                                              por defecto
+
+
+   Fecha                     dropdown radio + fechas personalizadas           Últimas 24 h, 3, 7, 15, 30 días, intervalo manual,
+                                                                              todas; fecha de publicación vs verificación
+                                                                              diferenciadas
+
+
+   Renta mensual             campos numéricos mínimo/máximo CLP + slider      Solo comparar montos compatibles; selector
+                             auxiliar                                         líquido/bruto/no especificado; Incluir ofertas
+                                                                              sin renta activado por defecto
+
+
+   Área y subárea            multiselect jerárquico con checkboxes            Administración, finanzas, comercial, salud,
+                                                                              logística, TI, construcción, minería, educación,
+                                                                              servicios, sector público, etc.
+
+
+   Cargo / seniority         multiselect con checkboxes                       Operativo, técnico, administrativo, profesional,
+                                                                              analista, coordinación, supervisión, jefatura,
+                                                                              subgerencia, gerencia
+
+
+   Experiencia requerida     dropdown checkbox                                Sin experiencia, 0-1, 1-2, 3-5, 6-10, >10 años,
+                                                                              no informada
+
+
+   Formación                 multiselect                                      Básica, media, técnico, universitario, posgrado,
+                                                                              indistinto/no informado
+
+
+   Tipo de jornada           checkbox                                         Completa, parcial, turnos, nocturna, por horas,
+                                                                              no informada
+
+
+   Tipo de contrato          checkbox                                         Indefinido, plazo fijo, obra/faena, reemplazo,
+                                                                              práctica, honorarios, no informado
+
+
+   Empresa                   combobox buscable multiselección                 Coincidencia por razón social y marca; opción
+                                                                              empresa confidencial
+
+
+   Fuente                    multiselect checkbox                             BNE, ChileTrabajos, Laborum, Trabajando,
+                                                                              Computrabajo, Empleos Públicos, corporativo,
+                                                                              manual, otra
+
+
+   Sector económico          multiselect jerárquico                           Salud, banca, retail, servicios, manufactura,
+                                                                              sector público, etc.
+
+
+   Estado / calidad          dropdown                                         Vigente, por verificar, vencida (solo si se
+                                                                              muestra expresamente); con enlace original;
+                                                                              datos completos
+
+
+ Lógica de facetas: OR dentro de una misma dimensión multiselección, AND entre dimensiones diferentes; rango
+ salarial como restricción numérica; exclusión geográfica forzosa de avisos con lugar de trabajo fuera de Chile;
+ ordenar por reciente/relevancia/renta/cierre próximo; paginación real o cursor/infinite scroll accesible; botón
+ Restablecer filtros; actualizar cantidad sin mentir. Cuando el aviso no declara modalidad, clasificarlo como No
+ informada y no darlo por presencial: por defecto ocultarlo o exponer una opción explícita para incluir modalidad
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                          06
+EMPLEOS CHILE                                                                         ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ no informada.
+
+ Búsqueda guardada: guardar exactamente texto, todas las facetas, orden y nombre; restaurar; editar filtros;
+ posibilidad de comparar nuevas ofertas importadas desde la última ejecución. Debe funcionar con la DB real y
+ persistir al salir de la sesión.
+
+
+
+ 07. INTERACCIONES Y ESTADOS QUE DEBEN ESTAR TERMINADOS
+  • Cada input, botón, checkbox, desplegable, pestaña, tarjeta, ícono accionable, enlace y menú debe tener una
+    acción auténtica, teclado/foco y feedback visual; nada decorativo o inerte.
+  • En filtros múltiples: buscador interno, Seleccionar todos cuando corresponda, Limpiar, scroll de opciones, etiqueta
+    del número seleccionado y cierre sin perder selección.
+  • Estados de UI diseñados: cargando (skeleton), sin ofertas, sin coincidencias, error recuperable, oferta vencida,
+    importación parcialmente válida, CV ilegible, sesión expirada y ausencia de sueldo.
+  • Feedback mediante toast discreto para guardar, borrar, importar; confirmación de acciones destructivas; sin
+    modales innecesarios.
+  • Favoritos y notas persisten en base de datos; una oferta importada dos veces conserva el favorito gracias a una
+    identidad estable.
+  • Compartir/copiar enlace a ficha interna sin comprometer privacidad; Ver oferta original abre enlace real, no una
+    URL fabricada.
+  • Accesibilidad: controles de mínimo 44 × 44 px en móvil, contrastes WCAG AA, roles ARIA, navegación por
+    teclado, foco visible, lector de pantalla y soporte de zoom.
+
+
+
+ 08. PESTAÑA PERSONAS Y CARGA DE CV
+ El portal administra múltiples perfiles, cada uno con identificación interna, nombre, preferencias, autorización del
+ interesado y uno o más CV versionados si se decide conservar versiones. Flujo: Personas → Añadir perfil → cargar
+ PDF/DOCX (drag & drop + selector de archivo) → extracción local o desde backend propio sin proveedor externo
+ → vista de revisión → edición/corrección de datos → guardar → ver coincidencias. Soportar archivos con texto; si
+ se recibe PDF escaneado sin texto, notificar claramente que requiere procesamiento manual y ofrecer formulario
+ editable; no prometer OCR no implementado.
+
+ Campos de perfil: nombre/alias, comuna y regiones disponibles, disponibilidad para traslado, cargos preferidos,
+ cargos compatibles, sectores de interés, experiencia laboral (empresa/función/fechas/logros), años de experiencia,
+ estudios, certificaciones, habilidades duras/blandas pertinentes, idiomas, nivel de responsabilidad, modalidad
+ aceptada, jornada, remuneración objetivo y preferencia bruto/líquido, observaciones privadas. Todos editables
+ independientemente del texto del CV.
+
+ Confidencialidad obligatoria: no subir CV, contenido extraído o datos de personas a GitHub, GitHub Pages,
+ registros públicos, archivos de ejemplos, analytics, servicios de IA de terceros o repositorios de fixtures. Validar
+ tamaño/tipo de archivo; almacenamiento controlado; opción de eliminar CV y todos sus datos; conservar solo el
+ texto/estructura indispensable por defecto, evitando guardar binario indefinidamente. Registrar consentimiento
+ del titular y fecha; no generar afirmaciones de consentimiento automático.
+
+ Búsqueda a partir del CV: botón Buscar oportunidades genera una consulta editables de cargos equivalentes,
+ sinónimos, habilidades y regiones. No depender de coincidencia textual exacta con el cargo anterior. Permitir
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                 07
+EMPLEOS CHILE                                                                         ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ elegir Búsqueda amplia o Búsqueda estricta. Resultados y notas se calculan contra anuncios existentes, nunca
+ contra puestos imaginados. Una persona puede tener múltiples búsquedas personalizadas.
+
+
+
+ 09. MOTOR DE COMPATIBILIDAD - SIN IA DE PAGO
+ Implementar un servicio real, explicable y reproducible de compatibilidad Candidato × Oferta. Funciona offline/sin
+ API comercial mediante reglas ponderadas, taxonomías y texto normalizado. Debe poder sustituirse
+ posteriormente por embeddings/modelos locales sin modificar el UI ni el contrato de resultados.
+
+ Puntuación inicial orientativa sobre 100: coincidencia funcional de responsabilidades/cargos (25), competencias
+ transferibles y habilidades (25), experiencia y seniority (15), educación/requisitos excluyentes (10), compatibilidad
+ geográfica/presencial (15), jornada/contrato/remuneración cuando consten (10). Estos pesos son configurables y
+ deben estar probados. Requisitos verdaderamente excluyentes (certificaciones obligatorias, licencia profesional o
+ presencialidad incompatible) deben bloquear la recomendación o rotularla No elegible, aunque los demás factores
+ sean altos. El sistema no debe inferir títulos profesionales inexistentes.
+
+ Explicación por resultado: Compatibilidad 82/100, A favor: 5 años en gestión de convenios y relación comercial, A
+ revisar: se solicita Power BI, Lugar: Providencia, presencial; separar coincidencias, brechas y datos insuficientes.
+ Un score nunca reemplaza la decisión humana ni afirma que la persona será contratada. Permitir ajustar
+ preferencias de una persona y recalcular sin recargar la aplicación.
+
+ Transferibilidad: implementar tabla editable de equivalencias de funciones (ej.: administración bancaria → gestión
+ de convenios, operaciones, back office, análisis comercial, control de gestión; siempre condicionado a funciones y
+ requisitos reales). Evitar equivalencias indiscriminadas. Detectar sinónimos de cargos de Chile, abreviaciones,
+ tildes, formas inclusivas y nomenclaturas habituales.
+
+
+
+ 10. ADMINISTRACIÓN DE VACANTES E INGESTA PREPARADA
+ Construir un panel administrativo real para importar CSV o JSON, previsualizar registros, seleccionar mapeo de
+ columnas, validar campos, detectar duplicados, ver errores por fila, confirmar importación, editar manualmente
+ una oferta y modificar estado. Adjuntar la URL original y la fecha de consulta. Permitir exportar el conjunto
+ importado. No exigir que ninguna fuente externa esté conectada para probar el producto.
+
+ Conectores futuros: definir interfaz formal por fuente: sourceId, fetch(cursor, filters), normalize(raw),
+ validate(record), healthCheck(), rateLimitPolicy, lastRunAt, nextCursor, provenance. Implementar adaptador
+ manual-import funcional y adaptadores de contrato BNE, ChileTrabajos, Laborum, Trabajando, Computrabajo,
+ EmpleosPublicos, Corporate claramente desconectados hasta segunda fase. Un adaptador desconectado no
+ dispara errores de consola ni genera ofertas inventadas.
+
+ Gestión de duplicados: priorizar URL canónica o ID externo; adicionalmente huella normalizada basada en
+ empresa+cargo+ubicación+fecha y similitud textual prudente. Registrar múltiples fuentes para la misma vacante
+ en lugar de multiplicar tarjetas. No confundir avisos con igual cargo de empresas distintas. Historial de cambios y
+ fecha de última verificación. Definir estados vigente, por_verificar, vencido, archivado; no usar vigente
+ automáticamente solo por haber importado hace minutos si faltan señales.
+
+ Política de datos: no sortear captchas ni autenticación, no usar endpoints privados descubiertos sin autorización y
+ revisar términos/robots/rate limits al crear las integraciones. La condición de portal personal no convierte un
+ endpoint en API autorizada. Esta regla aplica al adaptador posterior y no debe bloquear el desarrollo presente.
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                  08
+EMPLEOS CHILE                                                                                 ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ 11. MODELO DE DATOS Y CONTRATOS
+ Diseñar y migrar una base de datos persistente con tablas/entidades al menos para: users, candidates,
+ cv_documents/cv_extractions, candidate_experience, candidate_skills, jobs, job_sources, job_source_occurrences,
+ companies, locations, job_skills, saved_jobs, saved_searches, candidate_job_matches, job_notes, import_batches,
+ import_rows, source_connectors, audit_events.
+
+ Contrato mínimo Job (campos tipados y opcionales donde corresponda):
+
+
+   id, canonicalUrl, sourceIds[], sourceExternalIds[], title, companyName,
+   companyConfidential, countryCode='CL', regionCode, regionName,
+   communeCode, communeName, locality, addressApprox, modality,
+   category, subcategory, seniority, jobType, contractType, schedule,
+   experienceMinYears, educationLevel, salaryMinCLP, salaryMaxCLP,
+   salaryPeriod='monthly', salaryBasis='gross|net|unknown',
+   salaryIsDisclosed, description, responsibilities[], requirements[],
+   benefits[], skills[], publishedAt, expiresAt, firstSeenAt, lastSeenAt,
+   lastVerifiedAt, verificationStatus, createdAt, updatedAt
+
+
+
+ countryCode debe ser CL para cualquier oferta admitida; si un registro tiene lugar solo en otro país se rechaza.
+ Sueldo bruto/líquido nunca se homologa por una fórmula improvisada. Fechas deben usar zona horaria
+ America/Santiago para mostrar la información y UTC internamente. Guardar fuente y URL de cada dato cuando
+ sea necesario. Crear índices para búsqueda de texto, filtros de ubicación, fecha, categoría y estado.
+
+ Contrato de perfil: Candidate + experiencia, estudios, skills, preferencia salarial, movilidad, regiones, modalidad,
+ consentimiento, fecha de importación y borrado lógico/físico conforme a los requerimientos. Crear migraciones de
+ esquema, validaciones compartidas cliente/servidor y dataset de QA no real aislado exclusivamente en desarrollo.
+
+
+
+ 12. BACKEND, SERVICIOS Y API INTERNA
+ Entregar backend funcional con validaciones, autenticación y persistencia. Debe exponer una API interna
+ documentada (REST u otro contrato igualmente formal) con operaciones equivalentes a:
+
+
+   Grupo                        Endpoints/operaciones requeridos
+
+
+   Sesión                       POST /auth/login, POST /auth/logout, GET /auth/me
+
+
+   Ofertas                      GET /jobs con todos los filtros/orden/paginación, GET /jobs/:id, POST /jobs, PATCH /jobs/:id
+
+
+   Facetas                      GET /facets entrega catálogos y conteos coherentes con filtros
+
+
+   Favoritos                    GET/POST/DELETE /saved-jobs y notas personales por oferta
+
+
+   Búsquedas                    GET/POST/PATCH/DELETE /saved-searches
+
+
+   Personas                     GET/POST/PATCH/DELETE /candidates, POST /candidates/:id/cv, GET /candidates/:id/matches
+
+
+   Importaciones                POST /imports/preview, POST /imports/commit, GET /imports, GET /imports/:id/errors
+
+
+   Fuentes                      GET /sources, GET /sources/:id/status (sin sincronización externa real)
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                        09
+EMPLEOS CHILE                                                                               ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+   Grupo                         Endpoints/operaciones requeridos
+
+
+   Salud técnica                 GET /health con estado backend/base de datos; protegido o reducido si corresponde
+
+
+ Aplicar controles de autorización en backend, límites de tamaño para CV/importaciones, saneamiento de HTML,
+ protección contra XSS/CSRF, protección de sesión, validación de URL externa, consultas parametrizadas, rate limit
+ razonable en login y manejo de errores sin filtrar secretos. No almacenar contraseñas sin hash ni credenciales en
+ frontend. Registrar auditoría administrativa sin contenido de CV. Proporcionar OpenAPI/Swagger o esquema
+ tipado equivalente.
+
+
+
+ 13. ARQUITECTURA, ALOJAMIENTO Y REPOSITORIO
+ Conservar como única fuente de código el repositorio GitHub EldeSiempre100/Empleos_Chile, rama main, con
+ commits lógicos. Implementar una estructura monorepo razonable: /apps/web, /apps/api, /packages/shared,
+ /database, /docs, /tests, /scripts, workflows CI y archivos de despliegue. Un stack viable es React + Vite +
+ TypeScript en frontend y Node.js/TypeScript (Fastify/Hono o equivalente) en backend, con SQLite local y camino
+ documentado hacia una base gratuita persistente en alojamiento compatible; escoger versiones estables y fijar
+ dependencias. Manus puede ajustar tecnologías si lo justifica, sin disminuir funcionalidades.
+
+ Restricción decisiva: GitHub Pages es hosting estático y su sitio publicado normalmente es accesible
+ públicamente; no puede alojar el backend ni es una barrera de acceso personal. No poner CV, claves, listas
+ privadas de personas ni toda la DB en un build destinado a Pages. Si se usa GitHub Pages para una interfaz pública,
+ toda la información sensible debe permanecer tras una API autenticada y la exposición de la carcasa visual debe
+ aceptarse expresamente; la alternativa preferida es un frontend de acceso controlado en una plataforma gratuita
+ compatible con backend. No asumir capacidades de «GPT Sites» no verificadas. Documentar y probar el despliegue
+ gratuito elegido o, si requiere cuenta/credenciales del propietario, dejar la configuración precisa y funcionamiento
+ local completados sin inventar que está publicado.
+
+ Condiciones técnicas: no incorporar servicios de pago obligatorios; variables de entorno con .env.example (jamás
+ .env real versionado), secretos fuera del repositorio, controles de acceso reales, README con comandos install,
+ dev, test, build, migrate, seed-dev, start y deploy; CI con lint, typecheck, tests y build. Si el repo es público, asumir
+ permanentemente que todo archivo versionado puede ser leído por cualquier persona.
+
+
+
+ 14. DIRECCIÓN VISUAL Y SISTEMA DE DISEÑO
+ El resultado debe sentirse como un producto digital maduro, no como una plantilla genérica. Estética
+ contemporánea, sobria y elegante, con jerarquía editorial de alta legibilidad. Paleta sugerida: fondo marfil/gris muy
+ claro, superficies blancas, azul petróleo o índigo oscuro para cabeceras y acciones, acento turquesa moderado,
+ bordes neutros y colores semánticos discretos. Tipografía sans moderna; jerarquía consistente, alturas y
+ espaciados sistemáticos; esquinas moderadamente redondeadas, sombras tenues solo donde añadan separación
+ visual.
+
+ Componentes completos: AppShell, TopNav, SearchBar, SearchSuggestions, LocationMultiSelect, FilterAccordion,
+ CheckboxFacet, SalaryRange, DateRangePicker, ActiveFilterChips, FilterDrawer, ResultsToolbar, JobCard, JobList,
+ JobDetailPanel, JobDetailPage, SaveJobButton, EmptyState, LoadingSkeleton, CandidateCard, CVUploader,
+ CVReviewEditor, MatchScoreExplainer, ImportWizard, SourceStatusTable, Toast, ConfirmDialog, Pagination y
+ formularios accesibles. Mantener diseño consistente en todas las rutas, estados, formularios y móviles.
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                      10
+EMPLEOS CHILE                                                                          ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ Comportamiento: animaciones de 120-200 ms discretas; sin carruseles publicitarios, banners, métricas ficticias,
+ ilustraciones vacías, testimonios, pop-ups promocionales, fondos recargados ni texto de autojustificación. La
+ primera pantalla debe mostrar herramientas productivas y datos existentes o un estado vacío que invite a
+ importar, nunca una landing comercial ni contenido ficticio como si fuera real.
+
+
+
+ 15. PRUEBAS DE ACEPTACIÓN Y DEFINICIÓN DE TERMINADO
+ Cada uno de los siguientes escenarios debe ejecutarse y quedar validado con resultados observables:
+
+  1. Instalar desde cero, ejecutar backend, DB y frontend, autenticarse; recargar y conservar sesión según política
+    establecida.
+  2. Importar un CSV real autorizado de 50 o más registros; previsualizar mapeo, validar errores, confirmar y visualizar
+    ofertas en el buscador.
+  3. Importar nuevamente el mismo lote; demostrar deduplicación e identidad estable de ofertas/favoritos.
+  4. Buscar cargo y aplicar simultáneamente regiones, dos comunas, sector, fuente, fecha y renta; comprobar
+    semántica AND/OR, chips y contador.
+  5. Confirmar que Presencial es el filtro inicial, que teletrabajo internacional nunca aparece y que modalidad no
+    informada no se presenta falsamente como presencial.
+  6. Abrir ficha desde resultados, volver, conservar scroll/filtros/orden; guardar oferta, añadir nota y comprobar
+    persistencia tras reinicio.
+  7. Guardar una búsqueda, renombrarla, recuperarla, ejecutarla y borrarla sin perder otras preferencias.
+  8. Crear dos personas distintas; importar dos CV PDF/DOCX, revisar extracción y corregir datos; obtener
+    coincidencias separadas.
+  9. Comprobar explicación del score, brechas y exclusiones; cambiar comuna/sueldo/competencias y observar
+    recálculo determinista.
+  10. Eliminar CV y perfil; comprobar eliminación en DB y que el PDF nunca fue expuesto como archivo estático o
+    incorporado a Git.
+  11. Ejecutar la app sin conectores externos: importaciones, perfiles, filtros, matching y favoritos deben seguir
+    funcionando.
+  12. Ejecutar tests unitarios de filtros, normalización y scoring; tests de integración para API/DB; flujos E2E
+    Playwright en escritorio y móvil; auditoría básica de accesibilidad y build de producción.
+  13. Revisar los enlaces y que todos los botones/campos desplegables respondan; ningún TODO, UI rota, lorem
+    ipsum ni falsa señal de sincronización.
+  14. Verificar que un visitante no autenticado no obtiene CV, perfiles, favoritos ni datos privados por URL, API ni
+    paquete estático.
+ Definición de terminado: funcionalidad extremo a extremo, datos persistentes, UI responsive y pulida, pruebas
+ aprobadas, accesibilidad razonable, sin errores bloqueantes, sin datos privados publicados, integraciones externas
+ desacopladas, compilación y despliegue reproducibles, documentación completa. Prohibido dar por finalizado con
+ capturas de una maqueta o con un backend no conectado a la interfaz.
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                11
+EMPLEOS CHILE                                                                         ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+ 16. ENTREGABLES OBLIGATORIOS EN GITHUB
+ Manus debe entregar código realmente incorporado al repositorio, no solamente un enlace a una vista previa:
+
+  • Código fuente completo del frontend, backend, DB/migraciones, esquema compartido y tests.
+  • Archivo README con inicio rápido, arquitectura, variables de entorno y comandos verificables.
+  • Datos sintéticos de pruebas únicamente en directorios de desarrollo; nunca mezclarlos con producción ni
+    etiquetarlos como empleos vigentes.
+  • Importador CSV/JSON listo con plantilla de columnas y ejemplo válido sintético.
+  • Interfaces de conectores futuros, documentación de campos y estado no conectado en el panel administrativo.
+  • CI GitHub Actions con lint, typecheck, test, build; instrucciones de despliegue sin pago.
+  • Manual breve del usuario: Explorar, filtros, detalle, guardados, personas/CV, coincidencias, importaciones.
+  • Evidencias: capturas reales de escritorio y móvil de la aplicación funcionando, resultados de pruebas y ruta de
+    ejecución/deploy.
+  • Resumen final con commits, funcionalidades implementadas, comandos y restricciones objetivas pendientes
+    únicamente en integraciones externas o infraestructura que requiera credenciales del propietario.
+ Protocolo de entrega: desarrollar sobre main o rama de trabajo con PR y fusión aprobada según la capacidad
+ disponible; no sobrescribir cambios ajenos inadvertidamente; asegurar build en commit final. Si no dispones de
+ permisos de escritura, entregar PR o parche reproducible, nunca afirmar que fue desplegado o fusionado sin
+ hacerlo. Documentar qué fue verificado de manera real.
+
+
+
+ 17. ORDEN DE EJECUCIÓN PARA MANUS
+ Etapa A - Inspección y fundación: revisar repositorio existente, definir arquitectura gratuita viable, estructura,
+ tema visual, rutas, contratos DB y control de acceso. Etapa B - Explorador terminado: implementar búsqueda,
+ facetas, listas y ficha reales sobre DB, responsive. Etapa C - Gestión personal: favoritos, notas, búsquedas,
+ personas, CV y motor de compatibilidad. Etapa D - Administración: importación, normalización, deduplicación,
+ panel de fuentes, migraciones. Etapa E - Cierre: pruebas, seguridad, accesibilidad, documentación, CI,
+ despliegue/evidencia y commit final.
+
+ Estas son etapas internas de trabajo, no autorización para entregar solo las primeras. El compromiso es la
+ plataforma completa, funcional, visualmente profesional y lista para que un segundo encargo integre las fuentes
+ externas gratuitas en un momento posterior.
+
+
+
+ 18. FUENTES Y REPOSITORIOS PARA LA SIGUIENTE ETAPA (NO
+ INTEGRAR AÚN)
+
+   Recurso                    Enlace                                            Uso futuro previsto
+
+
+   GitHub del proyecto        github.com/EldeSiempre100/Empleos_Chile           Fuente única de código
+
+
+   Monitor de ofertas         github.com/Bpuglicivich1999/monitor-empleos-cl    Estudio de extractores
+   chilenas                                                                     ChileTrabajos/Trabajando
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                               12
+EMPLEOS CHILE                                                                           ESPECIFICACIÓN PARA MANUS · V1.0
+
+
+
+
+   Recurso                  Enlace                                               Uso futuro previsto
+
+
+   Scraper ChileTrabajos    github.com/jreyesg18/scraper_chiletrabajos           Referencia de extracción y selectores
+
+
+   Extracción Empleos       github.com/renzoperagallo/webscraping_empleo_pu      Campos de renta, plazos, región/ciudad
+   Públicos                 blico
+
+
+   Radar empleo público     github.com/jeannorambuena/bot_empleos_publicos       Trazabilidad de fuentes públicas y municipales
+
+
+   Laborum Scraper          github.com/andresmascl/Laborum-Scraper               Estudio de información publicada
+
+
+   API de Get on Board      getonbrd.cl/user-manual/api-de-get-on-board          Fuente gratuita complementaria, de nicho
+                                                                                 tecnológico
+
+
+   Guía GitHub Pages        docs.github.com/en/pages/getting-started-with-gith   Restricciones de hosting estático
+                            ub-...
+
+
+ Estos repositorios son referencias para evaluar y NO se consideran conectores probados ni autorizaciones
+ automáticas de scraping. Mantener política cero APIs de pago. No basar la aplicación en el funcionamiento
+ permanente de repositorios de terceros.
+
+
+ INSTRUCCIÓN DE CIERRE A MANUS: ejecuta el desarrollo de punta a punta, valida su calidad y deja
+ Empleos_Chile realmente construido en GitHub. Conecta todos los módulos internos y deja pendientes solo las
+ integraciones externas de obtención automática de ofertas. El resultado esperado es software terminado; no una
+ descripción, no una propuesta y no un prototipo.
+
+
+
+
+23 OCT 2026 · DOCUMENTO DE CONSTRUCCIÓN                                                                                       13
+
